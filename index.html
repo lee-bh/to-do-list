@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <title>to-do-list</title>
+    </head>
+    <body>
+        <h1>to-do-list</h1>
+        <section>
+            <input type="text" id="work" placeholder="Add a new task">
+            <input type="date" id="date" placeholder="due date">
+            <button id="add">Add</button>
+        </section>
+        <section>
+            <ul id="list"></ul>
+        </section>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+            import { getFirestore, collection, doc, setDoc, query, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyCVuyo2ly9rmDbspGs8S861H_0Whyr_9GY",
+              authDomain: "to-do-list-30cd3.firebaseapp.com",
+              projectId: "to-do-list-30cd3",
+              storageBucket: "to-do-list-30cd3.firebasestorage.app",
+              messagingSenderId: "124045385530",
+              appId: "1:124045385530:web:46902f9ffb14743b7e3a03"
+            };
+          
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+
+            const add = document.getElementById("add");
+            add.addEventListener("click", async () => {
+                const input = document.getElementById("work");
+                const date = document.getElementById("date");
+            
+                const task = input.value;
+                const dueDate = date.value;
+                const taskDoc = await addDoc(collection(db, "tasks"), {
+                    work: task,
+                    dueDate: dueDate
+                });
+                input.value = "";
+                date.value = "";
+                displayTasks();
+            });
+
+            const displayTasks = async () => {
+                document.getElementById("list").innerHTML = "";
+                const list = document.getElementById("list");
+                const tasks = query(collection(db, "tasks"));
+                const querySnapshot = await getDocs(tasks);
+                querySnapshot.forEach((doc) => {
+                    const taskItem = doc.data();
+                    const taskItemElement = document.createElement("li");
+                    taskItemElement.textContent = `${taskItem.work} - ${taskItem.dueDate}`;
+                    list.appendChild(taskItemElement);
+                });
+            };
+
+            displayTasks();
+          </script> 
+    </body>
